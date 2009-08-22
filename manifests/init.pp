@@ -12,13 +12,50 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-class nginx {
-	package { nginx: ensure => installed }
+class nginx  {
 
-    # Create the server as a virtual resource, so config instances
-    # can enable it.
-    @service { nginx:
+    package { nginx: ensure => installed }
+
+    file { "/usr/local/bin/fcgi-wrapcgi.pl":
+        source => "puppet:///nginx/fcgi-wrapcgi.pl",
+        mode => 755,
+        owner => root,
+        before => Service[nginx]
+    }
+
+    file { "/etc/nginx/nginx.conf":
+        content => template("nginx/nginx.conf.erb"),
+        mode => 644,
+        owner => root,
+        notify => Service[nginx]
+    }
+
+    file { "/etc/nginx/sites-enabled/default":
+        ensure => absent,
+    }
+
+    file { "/etc/nginx/sites-enabled":
+        purge => true,
+        notify => Service[nginx]
+    }
+    
+    #can just subscribe to a directory, or would this miss changes?
+    service { nginx:
         ensure => running,
-        enable => true
+        enable => true,
+        subscribe => File["/etc/nginx/sites-enabled"]
+    }
+
+    define site ($server_name="localhost", $doc_root="/var/www", $port=80, $conf_source="nginx/site.conf.erb") {
+        file { "/etc/nginx/sites-available/${name}.conf":
+            content => template($conf_source),
+            ensure => present,
+        }
+        file { "/etc/nginx/sites-enabled/${name}.conf":
+            ensure => link,
+            target => "/etc/nginx/sites-available/${name}.conf",
+        }
     }
 }
+
+
