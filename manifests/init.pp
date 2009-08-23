@@ -32,10 +32,6 @@ class nginx  {
 
     file { "/etc/nginx/sites-enabled/default":
         ensure => absent,
-    }
-
-    file { "/etc/nginx/sites-enabled":
-        purge => true,
         notify => Service[nginx]
     }
     
@@ -43,10 +39,9 @@ class nginx  {
     service { nginx:
         ensure => running,
         enable => true,
-        subscribe => File["/etc/nginx/sites-enabled"]
     }
 
-    define site ($server_name="localhost", $doc_root="/var/www", $port=80, $conf_source="nginx/site.conf.erb") {
+    define site ($server_name="localhost", $doc_root="/var/www", $port=80, $conf_source="nginx/site.conf.erb", $enable_cgi=false) {
         file { "/etc/nginx/sites-available/${name}.conf":
             content => template($conf_source),
             ensure => present,
@@ -54,6 +49,7 @@ class nginx  {
         file { "/etc/nginx/sites-enabled/${name}.conf":
             ensure => link,
             target => "/etc/nginx/sites-available/${name}.conf",
+            notify => Service[nginx]
         }
     }
 }
