@@ -14,6 +14,14 @@
 
 class nginx  {
 
+    $nginx_user = $operatingsystem ? {
+        Debian => "www-data",
+        Ubuntu => "www-data",
+        RedHat => "nginx",
+        Fedora => "nginx",
+        CentOS => "nginx",
+    }
+
     package { nginx: ensure => installed }
 
     file { "/usr/local/bin/fcgi-wrapcgi.pl":
@@ -27,7 +35,13 @@ class nginx  {
         content => template("nginx/nginx.conf.erb"),
         mode => 644,
         owner => root,
-        notify => Service[nginx]
+        notify => Service[nginx],
+        require => Package[nginx],
+    }
+
+    file { ["/etc/nginx/sites-available", "/etc/nginx/sites-enabled"]:
+        ensure => directory,
+        require => Package[nginx],
     }
 
     file { "/etc/nginx/sites-enabled/default":
