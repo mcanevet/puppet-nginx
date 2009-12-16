@@ -59,7 +59,7 @@ class nginx  {
         file { "/etc/nginx/sites-available/${name}.conf":
             content => template($conf_source),
             ensure => present,
-            notify => Service[nginx]
+            notify => Service[nginx],
         }
         file { "/etc/nginx/sites-enabled/${name}.conf":
             ensure => link,
