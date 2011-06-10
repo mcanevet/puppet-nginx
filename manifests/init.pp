@@ -55,14 +55,14 @@ class nginx  {
         enable => true,
     }
 
-    define site ($server_name="localhost", $doc_root="/var/www", $port=80, $conf_source="nginx/site.conf.erb", $enable_cgi=false) {
+    define site ($ensure=present,$server_name="localhost", $doc_root="/var/www", $port=80, $conf_source="nginx/site.conf.erb", $enable_cgi=false) {
         file { "/etc/nginx/sites-available/${name}.conf":
             content => template($conf_source),
-            ensure => present,
+            ensure => $ensure,
             notify => Service[nginx],
         }
         file { "/etc/nginx/sites-enabled/${name}.conf":
-            ensure => link,
+            ensure => $ensure? { present => link, default => $ensure},
             target => "/etc/nginx/sites-available/${name}.conf",
             notify => Service[nginx]
         }
