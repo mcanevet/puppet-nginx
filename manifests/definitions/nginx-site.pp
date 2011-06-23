@@ -4,6 +4,7 @@ define nginx::site($ensure=present,
                   mode   = 2570,
                   $server_name = 'localhost',
                   $doc_root    = '/var/www',
+                  $create_root = false,
                   $port = 80,
                   $conf_source = 'nginx/site.conf.erb', 
                   $enable_cgi = false) {
@@ -22,11 +23,13 @@ define nginx::site($ensure=present,
     $_group = $nginx::params::nginx_user
   }
 
-  file {"${doc_root}/${name}":
-    ensure => $ensure? {present => directory, default => $ensure },
-    owner  => $_owner,
-    group  => $_group,
-    mode   => $mode,
+  if $create_root {
+    file {"${doc_root}/${name}":
+      ensure => $ensure? {present => directory, default => $ensure },
+      owner  => $_owner,
+      group  => $_group,
+      mode   => $mode,
+    }
   }
 
   file {"/etc/nginx/sites-available/${name}.conf":
