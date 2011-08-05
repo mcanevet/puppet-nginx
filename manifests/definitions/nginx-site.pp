@@ -38,6 +38,7 @@ define nginx::site($ensure=present,
     group   => 'root',
     mode    => '0644',
     content => template($conf_source),
+    notify  => Exec['nginx-reload'],
   }
 
   file {"/etc/nginx/sites-enabled/${name}.conf":
