@@ -7,7 +7,7 @@ server {
     #access_log  logs/host.access.log  main;
 
     location / {
-        root   <%= doc_root %>;
+      root   <%= doc_root %>/<%= name %>;
         index  index.html index.htm;
     }
 
