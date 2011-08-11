@@ -25,7 +25,7 @@ class nginx {
     before => Service['nginx']
   }
 
-  file { ["/etc/nginx/sites-available", "/etc/nginx/sites-enabled"]:
+  file { ["/etc/nginx/sites-available", "/etc/nginx/sites-enabled", "/etc/nginx/conf.d"]:
     ensure  => directory,
     require => Package['nginx'],
     notify  => Service['nginx'],
