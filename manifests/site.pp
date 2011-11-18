@@ -1,7 +1,7 @@
 define nginx::site($ensure=present,
                   $owner = false,
                   $group = false,
-                  mode   = 2570,
+                  $mode  = 2570,
                   $server_name = 'localhost',
                   $doc_root    = '/var/www',
                   $create_root = false,
