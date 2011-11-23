@@ -18,7 +18,7 @@ class nginx {
   }
 
   file { '/usr/local/bin/fcgi-wrapcgi.pl':
-    source => 'puppet:///nginx/fcgi-wrapcgi.pl',
+    source => 'puppet:///modules/nginx/fcgi-wrapcgi.pl',
     mode   => 0755,
     owner  => 'root',
     group  => 'root',
