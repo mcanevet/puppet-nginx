@@ -36,7 +36,6 @@ class nginx {
     ensure  => directory,
     require => Package['nginx'],
     notify  => Service['nginx'],
-    source  => 'puppet:///modules/nginx/empty',
     purge   => true,
     force   => true,
     recurse => true,
