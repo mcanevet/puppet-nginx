@@ -8,13 +8,20 @@ class nginx {
   service { 'nginx':
     ensure => running,
     enable => true,
-    require => Package['nginx'],
+    require => [ Package['nginx'], File['/etc/nginx/nginx.conf'] ],
   }
 
   exec {"nginx-reload":
     refreshonly => true,
     command     => "nginx -s reload",
     onlyif      => "nginx -t",
+  }
+
+  $nginx_user = $nginx::params::nginx_user
+  file {'/etc/nginx/nginx.conf':
+    ensure  => present,
+    content => template('nginx/nginx.conf.erb'),
+    require => Package ['nginx'],
   }
 
   file { '/usr/local/bin/fcgi-wrapcgi.pl':
@@ -29,17 +36,9 @@ class nginx {
     ensure  => directory,
     require => Package['nginx'],
     notify  => Service['nginx'],
-    source  => 'puppet:///modules/nginx/empty',
     purge   => true,
     force   => true,
     recurse => true,
   }
 
-  # Add support for sites-enabled
-  if $::osfamily != 'Debian' {
-    nginx::config {'99_sites-enabled':
-      ensure   => present,
-      template => "include /etc/nginx/sites-enabled/*.conf;\n",
-    }
-  }
 }
