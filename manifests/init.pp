@@ -35,11 +35,4 @@ class nginx {
     recurse => true,
   }
 
-  # Add support for sites-enabled
-  if $::osfamily != 'Debian' {
-    nginx::config {'99_sites-enabled':
-      ensure   => present,
-      template => "include /etc/nginx/sites-enabled/*.conf;\n",
-    }
-  }
 }
