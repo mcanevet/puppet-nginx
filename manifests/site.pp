@@ -6,7 +6,7 @@ define nginx::site($ensure=present,
                   $doc_root    = '/var/www',
                   $create_root = false,
                   $port = 80,
-                  $conf_source = 'nginx/site.conf.erb', 
+                  $conf_source = 'nginx/site.conf.erb',
                   $enable_cgi = false) {
 
   include nginx::params
@@ -23,9 +23,14 @@ define nginx::site($ensure=present,
     $_group = $nginx::params::nginx_user
   }
 
+  $_ensure1 = $ensure? {
+    present => directory,
+    default => $ensure,
+  }
+
   if $create_root {
     file {"${doc_root}/${name}":
-      ensure => $ensure? {present => directory, default => $ensure },
+      ensure => $_ensure1,
       owner  => $_owner,
       group  => $_group,
       mode   => $mode,
@@ -41,8 +46,13 @@ define nginx::site($ensure=present,
     notify  => Exec['nginx-reload'],
   }
 
+  $_ensure2 = $ensure? {
+    present => link,
+    default => $ensure,
+  }
+
   file {"/etc/nginx/sites-enabled/${name}.conf":
-    ensure => $ensure? { present => link, default => $ensure},
+    ensure => $_ensure2,
     target => "../sites-available/${name}.conf",
     notify => Exec['nginx-reload'],
   }
