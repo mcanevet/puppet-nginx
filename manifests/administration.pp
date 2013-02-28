@@ -3,6 +3,7 @@ class nginx::administration {
 
   group { "apache-admin":
     ensure => present,
+    system => true,
   }
 
   sudo::directive { "nginx-administration":
