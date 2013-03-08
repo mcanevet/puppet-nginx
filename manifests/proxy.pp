@@ -1,5 +1,6 @@
 define nginx::proxy($proxy_target,
                     $ensure=present,
+                    $server_name=$name,
                     $server_port=80,
                     $proxy_base='/',
                     $opts=[],
