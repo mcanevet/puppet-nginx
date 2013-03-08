@@ -11,7 +11,7 @@ define nginx::config($ensure=present, $file=false, $template=false) {
     ensure => $ensure,
     owner  => 'root',
     group  => 'root',
-    mode   => 0644,
+    mode   => '0644',
     notify => Exec['nginx-reload'],
   }
 
