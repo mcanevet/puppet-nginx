@@ -1,8 +1,8 @@
 server {
-  listen <%=server_port%>;
-  server_name <%=server_name%> ;
-  location <%=proxy_base%> {
-    proxy_pass <%=proxy_target%>;
+  listen <%= @server_port %>;
+  server_name <%= @server_name %>;
+  location <%= @proxy_base %> {
+    proxy_pass <%= @proxy_target %>;
     <%= opts.collect! {|i| "\t#{i};\n" } -%>
   }
 }

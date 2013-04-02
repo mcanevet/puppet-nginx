@@ -1,6 +1,4 @@
 class nginx::administration {
-  include nginx::params
-
   group { 'apache-admin':
     ensure => present,
     system => true,
@@ -11,5 +9,4 @@ class nginx::administration {
     content => template('nginx/sudoers.nginx.erb'),
     require => Group['nginx-admin'],
   }
-
 }

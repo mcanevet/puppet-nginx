@@ -1,10 +1,10 @@
 define nginx::config($ensure=present, $file=false, $template=false) {
   if (!$file and !$template) {
-    fail "Please define either file or template for $name"
+    fail "Please define either file or template for ${name}"
   }
 
   if ($file and $template) {
-    fail "Please define either file OR template for $name"
+    fail "Please define either file OR template for ${name}"
   }
 
   file {"/etc/nginx/conf.d/${name}.conf":
@@ -12,7 +12,6 @@ define nginx::config($ensure=present, $file=false, $template=false) {
     owner  => 'root',
     group  => 'root',
     mode   => '0644',
-    notify => Exec['nginx-reload'],
   }
 
   if $file {

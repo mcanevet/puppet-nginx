@@ -1,45 +1,48 @@
-class nginx {
-  include nginx::params
+# == Class: nginx
+#
+# Install and configure nginx
+#
+# == Parameters
+# [*nginx_user*]
+#   The user thats runs nginx
+#
+# [*version*]
+#   The package version to install
+#
+# [*enable*]
+#   Should the service be enabled during boot time?
+#
+# [*start*]
+#   Should the service be started by Puppet
+class nginx(
+  $nginx_user = $::osfamily ? {
+    Debian => 'www-data',
+    RedHat => 'nginx',
+  },
+  $version = 'present',
+  $enable = true,
+  $start = true,
+) {
+  class{'nginx::install':}
+  class{'nginx::conf':}
+  class{'nginx::service':}
 
-  package { 'nginx':
-    ensure => installed,
-  }
+  Class['nginx::install'] ->
+  Class['nginx::conf'] ~>
+  Class['nginx::service']
 
-  service { 'nginx':
-    ensure  => running,
-    enable  => true,
-    require => [ Package['nginx'], File['/etc/nginx/nginx.conf'] ],
-  }
+  Class['nginx::install'] ->
+  Nginx::Config <| |> ~>
+  Class['nginx::service']
 
-  exec {'nginx-reload':
-    refreshonly => true,
-    command     => 'nginx -s reload',
-    onlyif      => 'nginx -t',
-  }
+  Class['nginx::install'] ->
+  Nginx::Proxy <| |> ~>
+  Class['nginx::service']
 
-  $nginx_user = $nginx::params::nginx_user
-  file {'/etc/nginx/nginx.conf':
-    ensure  => present,
-    content => template('nginx/nginx.conf.erb'),
-    require => Package ['nginx'],
-  }
+  Class['nginx::install'] ->
+  Nginx::Site <| |> ~>
+  Class['nginx::service']
 
-  file { '/usr/local/bin/fcgi-wrapcgi.pl':
-    source => 'puppet:///modules/nginx/fcgi-wrapcgi.pl',
-    mode   => '0755',
-    owner  => 'root',
-    group  => 'root',
-    before => Service['nginx']
-  }
-
-  file { ['/etc/nginx/sites-available',
-  '/etc/nginx/sites-enabled', '/etc/nginx/conf.d',]:
-    ensure  => directory,
-    require => Package['nginx'],
-    notify  => Service['nginx'],
-    purge   => true,
-    force   => true,
-    recurse => true,
-  }
-
+  Class['nginx::service'] ->
+  Class['nginx']
 }

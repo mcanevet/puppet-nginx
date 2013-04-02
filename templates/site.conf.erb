@@ -1,19 +1,19 @@
 server {
-    listen       <%= port %>;
-    server_name  <%= server_name %>;
+    listen       <%= @port %>;
+    server_name  <%= @server_name %>;
 
     #charset koi8-r;
 
     #access_log  logs/host.access.log  main;
 
     location / {
-      root   <%= doc_root %>/<%= name %>;
+      root   <%= @doc_root %>/<%= @name %>;
         index  index.html index.htm;
     }
 
     #error_page  404              /404.html;
 
-<% if enable_cgi != false -%>
+<% if @enable_cgi -%>
 
     location ~ ^.*\.cgi$ {
 	    gzip off; #gzip makes scripts feel slower since they have to complete before getting gzipped

@@ -9,8 +9,6 @@ define nginx::site($ensure=present,
                   $conf_source = 'nginx/site.conf.erb',
                   $enable_cgi = false) {
 
-  include nginx::params
-
   if $owner {
     $_owner = $owner
   } else {
@@ -20,7 +18,7 @@ define nginx::site($ensure=present,
   if $group {
     $_group = $group
   } else {
-    $_group = $nginx::params::nginx_user
+    $_group = $nginx::nginx_user
   }
 
   $_ensure1 = $ensure? {
@@ -43,7 +41,6 @@ define nginx::site($ensure=present,
     group   => 'root',
     mode    => '0644',
     content => template($conf_source),
-    notify  => Exec['nginx-reload'],
   }
 
   $_ensure2 = $ensure? {
@@ -54,6 +51,5 @@ define nginx::site($ensure=present,
   file {"/etc/nginx/sites-enabled/${name}.conf":
     ensure => $_ensure2,
     target => "../sites-available/${name}.conf",
-    notify => Exec['nginx-reload'],
   }
 }
